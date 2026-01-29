@@ -25,4 +25,9 @@ public class ArtistaService {
                    return repository.save(artistaEncontrado);
                }).orElseThrow(() -> new RecordNotFoundException(id));
     }
+
+    public void excluir(Long id) {
+        repository.delete(repository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id)));
+    }
 }
