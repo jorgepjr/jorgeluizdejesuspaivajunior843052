@@ -27,3 +27,5 @@ spring:
 
 jwt:
   secret: ${SECRET_KEY:my-secret-key}
+  expiration: 86400000
+  refresh-expiration: 604800000
