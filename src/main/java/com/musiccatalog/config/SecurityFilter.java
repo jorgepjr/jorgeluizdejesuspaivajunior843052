@@ -1,6 +1,6 @@
 package com.musiccatalog.config;
 
-import com.musiccatalog.repository.UserRepository;
+import com.musiccatalog.repository.account.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
