@@ -1,4 +1,4 @@
-package com.musiccatalog.config;
+package com.musiccatalog.service.account;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

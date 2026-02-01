@@ -1,6 +1,6 @@
 package com.musiccatalog.controller;
 
-import com.musiccatalog.config.TokenService;
+import com.musiccatalog.service.account.TokenService;
 import com.musiccatalog.dto.LoginRequest;
 import com.musiccatalog.dto.LoginResponse;
 import com.musiccatalog.dto.RefreshTokenRequest;
