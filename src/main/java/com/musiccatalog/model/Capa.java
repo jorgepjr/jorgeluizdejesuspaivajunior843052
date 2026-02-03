@@ -12,7 +12,7 @@ public class Capa {
     @Column(name = "arquivo_hash", nullable = false)
     private String arquivoHash;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id", nullable = false)
     private Album album;
 

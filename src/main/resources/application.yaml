@@ -29,3 +29,9 @@ jwt:
   secret: ${SECRET_KEY:my-secret-key}
   expiration: 86400000
   refresh-expiration: 604800000
+
+minio:
+  url: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin123}
+  bucket: ${MINIO_BUCKET:music-catalog}
