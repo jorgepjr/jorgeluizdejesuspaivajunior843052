@@ -1,13 +1,16 @@
 package com.musiccatalog.controller;
 
+import com.musiccatalog.dto.CapaAlbumResponse;
 import com.musiccatalog.dto.PagedResponse;
 import com.musiccatalog.model.Album;
 import com.musiccatalog.service.AlbumService;
+import com.musiccatalog.service.CapaService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,38 +18,47 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/albuns")
 public class AlbumController {
-    private final AlbumService service;
+    private final AlbumService albumService;
+    private final CapaService capaService;
 
-    public AlbumController(AlbumService service) {this.service = service;}
+    public AlbumController(AlbumService albumService, CapaService capaService) {this.albumService = albumService;
+        this.capaService = capaService;
+    }
 
     @GetMapping
     public PagedResponse<Album> obterPaginado(
             @RequestParam(defaultValue = "0") @PositiveOrZero int pageNumber,
             @RequestParam(defaultValue = "10") @Positive @Max(100) int pageSize) {
-        return service.obterPaginado(pageNumber, pageSize);
+        return albumService.obterPaginado(pageNumber, pageSize);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Album criar(@RequestBody Album album){
-        return service.criar(new Album(album.getNome()));
+        return albumService.criar(new Album(album.getNome()));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Album editar(@PathVariable Long id, @RequestBody Album album) {
-        return service.editar(id, album);
+        return albumService.editar(id, album);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Album obter(@NotNull @Positive @PathVariable Long id) {
-        return service.obterPorId(id);
+        return albumService.obterPorId(id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable @NotNull @Positive Long id) {
-       service.excluir(id);
+        albumService.excluir(id);
+    }
+
+    @GetMapping("/{albumId}/capas")
+    public ResponseEntity<CapaAlbumResponse> obterCapas(@PathVariable Long albumId) {
+        CapaAlbumResponse response = capaService.obterCapa(albumId);
+        return ResponseEntity.ok(response);
     }
 }

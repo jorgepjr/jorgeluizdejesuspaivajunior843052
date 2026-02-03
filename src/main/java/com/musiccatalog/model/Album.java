@@ -2,6 +2,8 @@ package com.musiccatalog.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Album {
 
@@ -11,6 +13,9 @@ public class Album {
 
    @Column(nullable = false, length = 150)
    private String nome;
+
+    @OneToMany(mappedBy = "album")
+    private List<Capa> capas;
 
    protected Album(){}
 
@@ -25,4 +30,8 @@ public class Album {
     public String getNome() {return nome;}
 
     public void setNome(String nome) {this.nome = nome;}
+
+    public List<Capa> getCapas() {return capas;}
+
+    public void setCapas(List<Capa> capas) {this.capas = capas;}
 }
