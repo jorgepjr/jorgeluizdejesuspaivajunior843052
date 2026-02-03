@@ -1,7 +1,29 @@
 package com.musiccatalog.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "artista_album")
 public class ArtistaAlbum {
 
-    private Long artistaId;
-    private Long albumId;
+    @EmbeddedId
+    private ArtistaAlbumId id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("artistaId")
+    @JoinColumn(name = "artista_id")
+    private Artista artista;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("albumId")
+    @JoinColumn(name = "album_id")
+    private Album album;
+
+    public ArtistaAlbum() {}
+
+    public ArtistaAlbum(Artista artista, Album album) {
+        this.id = new ArtistaAlbumId(artista.getId(), album.getId());
+        this.artista = artista;
+        this.album = album;
+    }
 }
