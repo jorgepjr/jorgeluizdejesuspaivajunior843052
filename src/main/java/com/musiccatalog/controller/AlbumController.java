@@ -61,4 +61,16 @@ public class AlbumController {
         CapaAlbumResponse response = capaService.obterCapa(albumId);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/{albumId}/artistas/{artistaId}")
+    public ResponseEntity<Void> vincularArtistaAoAlbum(@PathVariable Long albumId, @PathVariable Long artistaId) {
+        albumService.vincularArtista(albumId, artistaId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{albumId}/artistas/{artistaId}")
+    public ResponseEntity<Void> desvincularArtistaAoAlbum(@PathVariable Long albumId, @PathVariable Long artistaId) {
+        albumService.desvincularArtista(albumId, artistaId);
+        return ResponseEntity.noContent().build();
+    }
 }

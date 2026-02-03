@@ -3,7 +3,12 @@ package com.musiccatalog.service;
 import com.musiccatalog.dto.PagedResponse;
 import com.musiccatalog.exception.RecordNotFoundException;
 import com.musiccatalog.model.Album;
+import com.musiccatalog.model.Artista;
+import com.musiccatalog.model.ArtistaAlbum;
+import com.musiccatalog.model.ArtistaAlbumId;
 import com.musiccatalog.repository.AlbumRepository;
+import com.musiccatalog.repository.ArtistaAlbumRepository;
+import com.musiccatalog.repository.ArtistaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -13,36 +18,71 @@ import java.util.List;
 @Service
 public class AlbumService {
 
-    private final AlbumRepository repository;
+    private final AlbumRepository albumRepository;
+    private final ArtistaRepository artistaRepository;
+    private final ArtistaAlbumRepository artistaAlbumRepository;
 
-    public AlbumService(AlbumRepository repository) {this.repository = repository;}
 
-    public Album criar(Album album){
-        return repository.save(album);
+    public AlbumService(AlbumRepository albumRepository, ArtistaRepository artistaRepository, ArtistaAlbumRepository artistaAlbumRepository) {
+        this.albumRepository = albumRepository;
+        this.artistaRepository = artistaRepository;
+        this.artistaAlbumRepository = artistaAlbumRepository;
     }
 
-    public Album editar(Long id, Album album){
-       return repository.findById(id)
-               .map(albumEncontrado -> {
-                   albumEncontrado.setNome(album.getNome());
+    public Album criar(Album album) {
+        return albumRepository.save(album);
+    }
 
-                   return repository.save(albumEncontrado);
-               }).orElseThrow(() -> new RecordNotFoundException(id));
+    public Album editar(Long id, Album album) {
+        return albumRepository.findById(id)
+                .map(albumEncontrado -> {
+                    albumEncontrado.setNome(album.getNome());
+
+                    return albumRepository.save(albumEncontrado);
+                }).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
     public void excluir(Long id) {
-        repository.delete(repository.findById(id)
+        albumRepository.delete(albumRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException(id)));
     }
 
-    public Album obterPorId(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException(id));
-    }
-
     public PagedResponse<Album> obterPaginado(int pageNumber, int pageSize) {
-        Page<Album> pageAlbum = repository.findAll(PageRequest.of(pageNumber, pageSize));
+        Page<Album> pageAlbum = albumRepository.findAll(PageRequest.of(pageNumber, pageSize));
         List<Album> albuns = pageAlbum.getContent();
         return new PagedResponse<>(albuns, pageAlbum.getTotalElements(), pageAlbum.getTotalPages());
+    }
+
+    public void vincularArtista(Long albumId, Long artistaId) {
+        Artista artista = artistaRepository.findById(artistaId)
+                .orElseThrow(() -> new RuntimeException("Artista não encontrado"));
+
+        Album album = albumRepository.findById(albumId)
+                .orElseThrow(() -> new RuntimeException("Album não encontrado"));
+
+        ArtistaAlbumId id = new ArtistaAlbumId(artistaId, albumId);
+
+        if (artistaAlbumRepository.existsById(id)) {
+            throw new RuntimeException("Artista já está vinculado ao álbum");
+        }
+
+        ArtistaAlbum rel = new ArtistaAlbum(artista, album);
+
+        artistaAlbumRepository.save(rel);
+    }
+
+    public void desvincularArtista(Long artistaId, Long albumId) {
+        ArtistaAlbumId id = new ArtistaAlbumId(artistaId, albumId);
+
+        if (!artistaAlbumRepository.existsById(id)) {
+            throw new RuntimeException("Vínculo não existe");
+        }
+
+        artistaAlbumRepository.deleteById(id);
+    }
+
+    public Album obterPorId(Long id) {
+        return albumRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id));
     }
 }
