@@ -1,15 +1,16 @@
 package com.musiccatalog.service;
 
+import com.musiccatalog.dto.CapaAlbumResponse;
 import com.musiccatalog.exception.RecordNotFoundException;
 import com.musiccatalog.model.Album;
 import com.musiccatalog.model.Capa;
 import com.musiccatalog.repository.AlbumRepository;
 import com.musiccatalog.repository.CapaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CapaService {
@@ -35,11 +36,31 @@ public class CapaService {
         return capaRepository.save(new Capa(album, nomeArquivo));
     }
 
-    public List<Capa> findByAlbumId(Long albumId) {
-        return capaRepository.findByAlbumId(albumId);
-    }
+    public CapaAlbumResponse obterCapa(Long albumId) {
 
-    public String obterCapa(String arquivoHash) throws Exception {
-        return storageService.gerarLinkTemporario(arquivoHash);
+        Album album = albumRepository.findById(albumId)
+                .orElseThrow(() -> new EntityNotFoundException("Album não encontrado"));
+
+        List<Capa> capas = capaRepository.findByAlbumId(albumId);
+
+        List<String> links = capas == null ? Collections.emptyList() :
+                capas.stream()
+                        .map(Capa::getArquivoHash)
+                        .filter(Objects::nonNull)
+                        .map(hash -> {
+                            try {
+                                return storageService.gerarLinkTemporario(hash);
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
+                        .toList();
+
+        return new CapaAlbumResponse(
+                album.getId(),
+                album.getNome(),
+                links
+        );
     }
 }
