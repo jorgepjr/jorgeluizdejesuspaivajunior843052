@@ -26,7 +26,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private UserRole role = UserRole.USER;
 
-    public User() {}
+    protected User() {}
 
     public User(String login, String password, UserRole role) {
         this.login = login;
