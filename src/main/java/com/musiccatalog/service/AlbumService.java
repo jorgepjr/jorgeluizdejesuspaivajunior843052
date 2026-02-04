@@ -48,24 +48,13 @@ public class AlbumService {
                 .orElseThrow(() -> new RecordNotFoundException(id)));
     }
 
-    public PagedResponse<AlbumResponse> obterPaginado(String nome, Pageable pageable) {
-        Page<Album> page;
+    public Page<AlbumResponse> obterPaginado(String nome, Pageable pageable) {
 
-        if (nome != null && !nome.isBlank()) {
-            page = albumRepository.findByNomeContainingIgnoreCase(nome, pageable);
-        } else {
-            page = albumRepository.findAll(pageable);
-        }
+        Page<Album> page = (nome == null || nome.isBlank())
+                ? albumRepository.findAll(pageable)
+                : albumRepository.findByNomeContainingIgnoreCase(nome, pageable);
 
-        List<AlbumResponse> albuns = page.stream()
-                .map(x -> new AlbumResponse(x.getId(), x.getNome()))
-                .toList();
-
-        return new PagedResponse<>(
-                albuns,
-                page.getTotalElements(),
-                page.getTotalPages()
-        );
+        return page.map(album -> new AlbumResponse(album.getId(), album.getNome()));
     }
 
     public void vincularArtista(Long albumId, Long artistaId) {

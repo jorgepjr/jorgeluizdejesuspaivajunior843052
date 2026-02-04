@@ -2,14 +2,13 @@ package com.musiccatalog.controller;
 
 import com.musiccatalog.dto.AlbumResponse;
 import com.musiccatalog.dto.CapaAlbumResponse;
-import com.musiccatalog.dto.PagedResponse;
 import com.musiccatalog.model.Album;
 import com.musiccatalog.service.AlbumService;
 import com.musiccatalog.service.CapaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -32,8 +31,8 @@ public class AlbumController {
     }
 
     @GetMapping
-    public PagedResponse<AlbumResponse> obterPaginado(@RequestParam(required = false) String nome,
-                                                      @PageableDefault(sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+    public Page<AlbumResponse> obterPaginado(@RequestParam(required = false) String nome,
+                                             @PageableDefault(sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
 
         return albumService.obterPaginado(nome, pageable);
     }
