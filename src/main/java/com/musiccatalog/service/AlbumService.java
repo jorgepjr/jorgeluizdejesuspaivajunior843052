@@ -1,7 +1,8 @@
 package com.musiccatalog.service;
 
 import com.musiccatalog.dto.AlbumResponse;
-import com.musiccatalog.dto.PagedResponse;
+import com.musiccatalog.dto.ArtistaResponse;
+import com.musiccatalog.dto.CapaResponse;
 import com.musiccatalog.exception.RecordNotFoundException;
 import com.musiccatalog.model.Album;
 import com.musiccatalog.model.Artista;
@@ -10,11 +11,10 @@ import com.musiccatalog.model.ArtistaAlbumId;
 import com.musiccatalog.repository.AlbumRepository;
 import com.musiccatalog.repository.ArtistaAlbumRepository;
 import com.musiccatalog.repository.ArtistaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AlbumService {
@@ -22,12 +22,14 @@ public class AlbumService {
     private final AlbumRepository albumRepository;
     private final ArtistaRepository artistaRepository;
     private final ArtistaAlbumRepository artistaAlbumRepository;
+    private final MinioService minioService;
 
 
-    public AlbumService(AlbumRepository albumRepository, ArtistaRepository artistaRepository, ArtistaAlbumRepository artistaAlbumRepository) {
+    public AlbumService(AlbumRepository albumRepository, ArtistaRepository artistaRepository, ArtistaAlbumRepository artistaAlbumRepository, MinioService minioService) {
         this.albumRepository = albumRepository;
         this.artistaRepository = artistaRepository;
         this.artistaAlbumRepository = artistaAlbumRepository;
+        this.minioService = minioService;
     }
 
     public Album criar(Album album) {
@@ -46,15 +48,6 @@ public class AlbumService {
     public void excluir(Long id) {
         albumRepository.delete(albumRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException(id)));
-    }
-
-    public Page<AlbumResponse> obterPaginado(String nome, Pageable pageable) {
-
-        Page<Album> page = (nome == null || nome.isBlank())
-                ? albumRepository.findAll(pageable)
-                : albumRepository.findByNomeContainingIgnoreCase(nome, pageable);
-
-        return page.map(album -> new AlbumResponse(album.getId(), album.getNome()));
     }
 
     public void vincularArtista(Long albumId, Long artistaId) {
@@ -89,4 +82,33 @@ public class AlbumService {
         return albumRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException(id));
     }
+
+    @Transactional
+    public Page<AlbumResponse> filtrar(String busca, Pageable pageable) {
+        Page<Album> page;
+
+        if (busca == null) {
+            page = albumRepository.findAll(pageable);
+        } else {
+            page = albumRepository.filtrar(busca.toUpperCase(), pageable);
+        }
+
+        return page.map(album -> new AlbumResponse(
+                album.getId(),
+                album.getNome(),
+                album.getArtistas().stream()
+                        .map(a -> new ArtistaResponse(a.getArtista().getId(), a.getArtista().getNome(), a.getArtista().getTipo()))
+                        .toList(),
+                album.getCapas().stream()
+                        .map(c -> {
+                            try {
+                                return new CapaResponse(c.getId(), minioService.gerarLinkTemporario(c.getArquivoHash()));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .toList()
+        ));
+    }
+
 }

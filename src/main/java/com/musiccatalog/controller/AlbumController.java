@@ -9,13 +9,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import static com.musiccatalog.utils.PageableUtils.toPageable;
 
 @Validated
 @RestController
@@ -31,11 +30,17 @@ public class AlbumController {
     }
 
     @GetMapping
-    public Page<AlbumResponse> obterPaginado(@RequestParam(required = false) String nome,
-                                             @PageableDefault(sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+    public ResponseEntity<Page<AlbumResponse>> filtrar(
+            @RequestParam(required = false) String busca,
+            @RequestParam(defaultValue = "nome,asc") String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        return albumService.obterPaginado(nome, pageable);
+
+        Page<AlbumResponse> result = albumService.filtrar(busca, toPageable(page, size, sort));
+        return ResponseEntity.ok(result);
     }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

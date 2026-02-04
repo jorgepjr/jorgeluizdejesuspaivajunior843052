@@ -32,6 +32,8 @@ public class Artista {
     }
 
     public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
+
 
     public String getNome() {return nome;}
 
@@ -40,4 +42,8 @@ public class Artista {
     public TipoArtista getTipo() {return tipo;}
 
     public void setTipo(TipoArtista tipo) {this.tipo = tipo;}
+
+    public Set<ArtistaAlbum> getAlbuns() {return albuns;}
+
+    public void setAlbuns(Set<ArtistaAlbum> albuns) {this.albuns = albuns;}
 }
