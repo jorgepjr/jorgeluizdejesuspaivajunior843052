@@ -1,4 +1,4 @@
-package com.musiccatalog.config;
+package com.musiccatalog.security;
 
 import com.musiccatalog.repository.account.UserRepository;
 import com.musiccatalog.service.account.TokenService;
