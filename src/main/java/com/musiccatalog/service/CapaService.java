@@ -63,4 +63,9 @@ public class CapaService {
                 links
         );
     }
+
+    public void excluir(Long id) {
+        capaRepository.delete(capaRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id)));
+    }
 }

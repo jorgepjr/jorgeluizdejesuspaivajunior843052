@@ -2,6 +2,8 @@ package com.musiccatalog.controller;
 
 import com.musiccatalog.model.Capa;
 import com.musiccatalog.service.CapaService;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -23,5 +25,11 @@ public class CapaController {
     @ResponseStatus(HttpStatus.CREATED)
     public Capa criar(@RequestParam Long albumId, @RequestPart("arquivo") MultipartFile arquivo) {
         return service.salvar(albumId, arquivo);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable @NotNull @Positive Long id) {
+        service.excluir(id);
     }
 }
