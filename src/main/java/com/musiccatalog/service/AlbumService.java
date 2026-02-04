@@ -1,5 +1,6 @@
 package com.musiccatalog.service;
 
+import com.musiccatalog.dto.AlbumResponse;
 import com.musiccatalog.dto.PagedResponse;
 import com.musiccatalog.exception.RecordNotFoundException;
 import com.musiccatalog.model.Album;
@@ -10,7 +11,7 @@ import com.musiccatalog.repository.AlbumRepository;
 import com.musiccatalog.repository.ArtistaAlbumRepository;
 import com.musiccatalog.repository.ArtistaRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,10 +48,24 @@ public class AlbumService {
                 .orElseThrow(() -> new RecordNotFoundException(id)));
     }
 
-    public PagedResponse<Album> obterPaginado(int pageNumber, int pageSize) {
-        Page<Album> pageAlbum = albumRepository.findAll(PageRequest.of(pageNumber, pageSize));
-        List<Album> albuns = pageAlbum.getContent();
-        return new PagedResponse<>(albuns, pageAlbum.getTotalElements(), pageAlbum.getTotalPages());
+    public PagedResponse<AlbumResponse> obterPaginado(String nome, Pageable pageable) {
+        Page<Album> page;
+
+        if (nome != null && !nome.isBlank()) {
+            page = albumRepository.findByNomeContainingIgnoreCase(nome, pageable);
+        } else {
+            page = albumRepository.findAll(pageable);
+        }
+
+        List<AlbumResponse> albuns = page.stream()
+                .map(x -> new AlbumResponse(x.getId(), x.getNome()))
+                .toList();
+
+        return new PagedResponse<>(
+                albuns,
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
     public void vincularArtista(Long albumId, Long artistaId) {
@@ -75,7 +90,7 @@ public class AlbumService {
         ArtistaAlbumId id = new ArtistaAlbumId(artistaId, albumId);
 
         if (!artistaAlbumRepository.existsById(id)) {
-            throw new RuntimeException("Vínculo não existe");
+            throw new RuntimeException("Vinculo nao existe");
         }
 
         artistaAlbumRepository.deleteById(id);

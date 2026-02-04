@@ -1,14 +1,16 @@
 package com.musiccatalog.controller;
 
+import com.musiccatalog.dto.AlbumResponse;
 import com.musiccatalog.dto.CapaAlbumResponse;
 import com.musiccatalog.dto.PagedResponse;
 import com.musiccatalog.model.Album;
 import com.musiccatalog.service.AlbumService;
 import com.musiccatalog.service.CapaService;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,20 +23,21 @@ public class AlbumController {
     private final AlbumService albumService;
     private final CapaService capaService;
 
-    public AlbumController(AlbumService albumService, CapaService capaService) {this.albumService = albumService;
+    public AlbumController(AlbumService albumService, CapaService capaService) {
+        this.albumService = albumService;
         this.capaService = capaService;
     }
 
     @GetMapping
-    public PagedResponse<Album> obterPaginado(
-            @RequestParam(defaultValue = "0") @PositiveOrZero int pageNumber,
-            @RequestParam(defaultValue = "10") @Positive @Max(100) int pageSize) {
-        return albumService.obterPaginado(pageNumber, pageSize);
+    public PagedResponse<AlbumResponse> obterPaginado(@RequestParam(required = false) String nome,
+                                                      @PageableDefault(sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        return albumService.obterPaginado(nome, pageable);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Album criar(@RequestBody Album album){
+    public Album criar(@RequestBody Album album) {
         return albumService.criar(new Album(album.getNome()));
     }
 
