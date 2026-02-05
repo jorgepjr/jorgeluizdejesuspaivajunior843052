@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Long> {
 
@@ -23,11 +25,11 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
            OR UPPER(ar.nome) LIKE CONCAT('%', UPPER(:nome), '%')
            OR UPPER(al.nome) LIKE CONCAT('%', UPPER(:nome), '%'))
 """)
-    Page<Album> filtrar(
-            @Param("nome") String busca,
-            @Param("tipoArtista") TipoArtista tipo,
-            Pageable pageable
-    );
+    Page<Album> filtrar(@Param("nome") String busca, @Param("tipoArtista") TipoArtista tipo, Pageable pageable);
+
+    boolean existsByNomeIgnoreCase(String nome);
+
+    Optional<Album> findByNomeIgnoreCase(String nome);
 
 
 }

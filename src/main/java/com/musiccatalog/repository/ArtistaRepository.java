@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ArtistaRepository extends JpaRepository<Artista, Long> {
 
@@ -18,11 +20,11 @@ public interface ArtistaRepository extends JpaRepository<Artista, Long> {
             WHERE (:nome IS NULL OR :nome = '' OR LOWER(a.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
               AND (:tipo IS NULL OR a.tipo = :tipo)
             """)
-    Page<Artista> filtrar(
-            @Param("nome") String nome,
-            @Param("tipo") TipoArtista tipo,
-            Pageable pageable
+    Page<Artista> filtrar(@Param("nome") String nome, @Param("tipo") TipoArtista tipo, Pageable pageable
     );
 
+    boolean existsByNomeIgnoreCase(String nome);
+
+    Optional<Artista> findByNomeIgnoreCase(String nome);
 
 }

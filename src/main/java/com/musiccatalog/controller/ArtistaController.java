@@ -1,9 +1,11 @@
 package com.musiccatalog.controller;
 
+import com.musiccatalog.dto.ArtistaRequest;
 import com.musiccatalog.dto.ArtistaResponse;
 import com.musiccatalog.enums.TipoArtista;
 import com.musiccatalog.model.Artista;
 import com.musiccatalog.service.ArtistaService;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -35,8 +37,8 @@ public class ArtistaController {
     }
 
     @PostMapping
-    public ResponseEntity<ArtistaResponse> criar(@RequestBody Artista artista) {
-        var response = service.criar(new Artista(artista.getNome(), artista.getTipo()));
+    public ResponseEntity<ArtistaResponse> criar(@RequestBody @Valid ArtistaRequest artista) {
+        var response = service.criar(new Artista(artista.nome(), artista.tipo()));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

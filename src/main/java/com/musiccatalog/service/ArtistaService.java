@@ -17,6 +17,11 @@ public class ArtistaService {
     public ArtistaService(ArtistaRepository repository) {this.repository = repository;}
 
     public ArtistaResponse criar(Artista artista) {
+
+        if (repository.existsByNomeIgnoreCase(artista.getNome())) {
+            throw new RuntimeException("Já existe artista com esse nome.");
+        }
+
         var newArtista = repository.save(artista);
 
         return new ArtistaResponse(
@@ -28,6 +33,13 @@ public class ArtistaService {
     public ArtistaResponse editar(Long id, Artista artista) {
         return repository.findById(id)
                 .map(artistaEncontrado -> {
+
+                    repository.findByNomeIgnoreCase(artista.getNome())
+                            .filter(a -> !a.getId().equals(id))
+                            .ifPresent(a -> {
+                                throw new RuntimeException("Já existe artista cadastrado com esse nome");
+                            });
+
                     artistaEncontrado.setTipo(artista.getTipo());
                     artistaEncontrado.setNome(artista.getNome());
 

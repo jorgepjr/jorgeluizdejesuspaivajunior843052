@@ -40,6 +40,11 @@ public class AlbumService {
     }
 
     public AlbumResponse criar(Album album) {
+
+        if (albumRepository.existsByNomeIgnoreCase(album.getNome())) {
+            throw new RuntimeException("Já existe album com esse nome.");
+        }
+
         var newAlbum = albumRepository.save(album);
         var albumResponse = new AlbumResponse(newAlbum.getId(), newAlbum.getNome(), null, null);
 
@@ -47,7 +52,7 @@ public class AlbumService {
             notificacaoService.notificarAlbumCriado(albumResponse);
             log.info("Notificacao da criacao do album enviada com sucesso.");
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             log.warn("Falha ao enviar notificação do álbum {}.", albumResponse.id(), ex);
         }
         return albumResponse;
@@ -58,6 +63,13 @@ public class AlbumService {
     public AlbumResponse editar(Long id, Album album) {
         return albumRepository.findById(id)
                 .map(albumEncontrado -> {
+
+                    albumRepository.findByNomeIgnoreCase(album.getNome())
+                            .filter(a -> !a.getId().equals(id))
+                            .ifPresent(a -> {
+                                throw new RuntimeException("Já existe álbum com esse nome.");
+                            });
+
                     albumEncontrado.setNome(album.getNome());
 
                     var albumEdit = albumRepository.save(albumEncontrado);
