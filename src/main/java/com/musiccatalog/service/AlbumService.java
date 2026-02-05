@@ -3,6 +3,7 @@ package com.musiccatalog.service;
 import com.musiccatalog.dto.AlbumResponse;
 import com.musiccatalog.dto.ArtistaResponse;
 import com.musiccatalog.dto.CapaResponse;
+import com.musiccatalog.enums.TipoArtista;
 import com.musiccatalog.exception.RecordNotFoundException;
 import com.musiccatalog.model.Album;
 import com.musiccatalog.model.Artista;
@@ -84,13 +85,13 @@ public class AlbumService {
     }
 
     @Transactional
-    public Page<AlbumResponse> filtrar(String busca, Pageable pageable) {
+    public Page<AlbumResponse> filtrar(String nome, TipoArtista tipoArtista, Pageable pageable) {
         Page<Album> page;
 
-        if (busca == null) {
+        if (nome == null && tipoArtista == null) {
             page = albumRepository.findAll(pageable);
         } else {
-            page = albumRepository.filtrar(busca.toUpperCase(), pageable);
+            page = albumRepository.filtrar(nome, tipoArtista, pageable);
         }
 
         return page.map(album -> new AlbumResponse(

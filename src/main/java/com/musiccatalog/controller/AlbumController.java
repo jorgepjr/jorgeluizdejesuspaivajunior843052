@@ -2,6 +2,7 @@ package com.musiccatalog.controller;
 
 import com.musiccatalog.dto.AlbumResponse;
 import com.musiccatalog.dto.CapaAlbumResponse;
+import com.musiccatalog.enums.TipoArtista;
 import com.musiccatalog.model.Album;
 import com.musiccatalog.service.AlbumService;
 import com.musiccatalog.service.CapaService;
@@ -31,13 +32,14 @@ public class AlbumController {
 
     @GetMapping
     public ResponseEntity<Page<AlbumResponse>> filtrar(
-            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) TipoArtista tipoArtista,
             @RequestParam(defaultValue = "nome,asc") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
 
-        Page<AlbumResponse> result = albumService.filtrar(busca, toPageable(page, size, sort));
+        Page<AlbumResponse> result = albumService.filtrar(nome, tipoArtista, toPageable(page, size, sort));
         return ResponseEntity.ok(result);
     }
 

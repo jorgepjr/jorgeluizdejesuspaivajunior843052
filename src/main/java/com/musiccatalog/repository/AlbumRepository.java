@@ -1,5 +1,6 @@
 package com.musiccatalog.repository;
 
+import com.musiccatalog.enums.TipoArtista;
 import com.musiccatalog.model.Album;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,18 +11,23 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Long> {
-    Page<Album> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
 
     @Query("""
-            SELECT DISTINCT al
-            FROM Album al
-            LEFT JOIN FETCH al.capas c
-            LEFT JOIN FETCH al.artistas aa
-            LEFT JOIN FETCH aa.artista ar
-            WHERE (:busca IS NULL OR ar.tipo = :busca)
-            OR    (:busca IS NULL OR ar.nome = :busca)
-            OR    (:busca IS NULL OR al.nome = :busca)
-            """)
-    Page<Album> filtrar(@Param("busca") String busca, Pageable pageable);
+    SELECT DISTINCT al
+    FROM Album al
+    LEFT JOIN FETCH al.capas c
+    LEFT JOIN FETCH al.artistas aa
+    LEFT JOIN FETCH aa.artista ar
+    WHERE (:tipoArtista IS NULL OR ar.tipo = :tipoArtista)
+      AND (:nome IS NULL OR :nome = ''
+           OR UPPER(ar.nome) LIKE CONCAT('%', UPPER(:nome), '%')
+           OR UPPER(al.nome) LIKE CONCAT('%', UPPER(:nome), '%'))
+""")
+    Page<Album> filtrar(
+            @Param("nome") String busca,
+            @Param("tipoArtista") TipoArtista tipo,
+            Pageable pageable
+    );
+
 
 }
