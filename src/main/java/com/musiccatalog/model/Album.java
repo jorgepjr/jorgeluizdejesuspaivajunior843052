@@ -40,4 +40,8 @@ public class Album {
     public List<Capa> getCapas() {return capas;}
 
     public void setCapas(List<Capa> capas) {this.capas = capas;}
+
+    public Set<ArtistaAlbum> getArtistas() {return artistas;}
+
+    public void setArtistas(Set<ArtistaAlbum> artistas) {this.artistas = artistas;}
 }

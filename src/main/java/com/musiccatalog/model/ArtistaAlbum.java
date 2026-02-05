@@ -26,4 +26,16 @@ public class ArtistaAlbum {
         this.artista = artista;
         this.album = album;
     }
+
+    public ArtistaAlbumId getId() {return id;}
+
+    public void setId(ArtistaAlbumId id) {this.id = id;}
+
+    public Artista getArtista() {return artista;}
+
+    public void setArtista(Artista artista) {this.artista = artista;}
+
+    public Album getAlbum() {return album;}
+
+    public void setAlbum(Album album) {this.album = album;}
 }
