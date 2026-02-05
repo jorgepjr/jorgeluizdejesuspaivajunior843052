@@ -24,52 +24,58 @@ WebSocket, rate limiting.
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Estrutura do Projeto (resumo)
 
-```
-music-catalog-api/
-├── src/
-│   ├── main/java/com/music/catalog/
-│   │   ├── MusicCatalogApiApplication.java
-│   │   ├── config/
-│   │   │   ├── SecurityConfig.java
-│   │   │   ├── CorsConfig.java
-│   │   │   ├── MinioConfig.java
-│   │   │   ├── WebSocketConfig.java
-│   │   │   ├── RateLimitConfig.java
-│   │   │   └── OpenApiConfig.java
-│   │   ├── controller/
-│   │   ├── service/
-│   │   ├── repository/
-│   │   ├── entity/
-│   │   ├── dto/
-│   │   ├── security/
-│   │   ├── exception/
-│   │   ├── util/
-│   │   └── health/
-│   └── resources/
-│       ├── application.yml
-│       ├── application-dev.yml
-│       ├── application-docker.yml
-│       └── db/migration/
-│
-├── src/test/java/com/music/catalog/
-│   ├── controller/
-│   ├── service/
-│   └── integration/
-│
-├── docker/
-│   ├── Dockerfile
-│   └── Dockerfile.prod
-│
-├── docker-compose.yml
-├── pom.xml
-└── README.md
-```
+- controller --> Camada HTTP
+
+- service --> Regras de negócio
+
+- repository --> Persistência
+
+- dto --> Contratos de entrada e saída
+
+- config --> Segurança, WebSocket, Rate Limit
+
+- exception --> Tratamento global de erros
+
+- domain/model --> Entidades JPA
+
 
 ---
 
-## 🚀 Como Rodar com Docker
+## 🔐 Autenticação
+
+A API utiliza JWT com dois tokens:
+
+- Access Token (curta duração - 5 minutos)
+
+- Refresh Token (longa duração - 7 dias)
+
+```
+jwt:
+expiration: 300000
+refresh-expiration: 604800000
+````
+
+## 👤 Usuário padrão (seed automático)
+
+- Criado automaticamente na primeira execução do projeto para facilitar testes:
+```
+username: admin
+password: admin
+role: ADMIN
+______________________
+username: aser
+password: user
+role: USER
+```
+
+## 🚀 Como rodar o projeto
+
+### Pré-requisitos
+- Docker e Docker Compose instalados
+- Java 21 (caso rode localmente)
+- Maven (caso rode localmente)
 
 ### 1. Gerar o `.jar` da aplicação:
 
@@ -83,38 +89,98 @@ mvn clean package -DskipTests
 docker-compose up --build
 ```
 
-A aplicação estará disponível em:  
-📍 `http://localhost:8080`
+## Serviços iniciados:
+
+#### API: http://localhost:8080
+
+### Postgres: localhost:5432
+
+### MinIO: http://localhost:9001
+
+### Swagger: http://localhost:8080/swagger-ui.html
 
 ---
 
-## ✅ Requisitos
+### 3. Banco de Dados e Pré-cadastros
 
-- Docker e Docker Compose instalados
-- Java 21 (caso rode localmente)
-- Maven (caso rode localmente)
+- As tabelas são criadas automaticamente via Flyway migrations.
+- Dados iniciais para testes também são populados (artistas / álbuns).
 
-## 📖 Documentação da API
+# 🗄️ MinIO
+### Configuração padrão:
 
-### Swagger/OpenAPI
+```
+Endpoint: http://localhost:9000
+Access Key: minioadmin
+Secret Key: minioadmin123
+Bucket: music-catalog
+```
+### 📌 O bucket é criado automaticamente caso não exista.
+
+- Suporte a múltiplas capas por álbum
+- Geração de links pré-assinados
+- Expiração padrão: 30 minutos (configurável no ```application.yaml```)
+
+## 📄 Documentação da API (Swagger/OpenAPI)
 ```
 http://localhost:8080/swagger-ui.html
-http://localhost:8080/v3/api-docs
+http://localhost:8080/v3/api-docs 
 ```
+### Inclui:
+- Autenticação Bearer JWT
+- Todos os endpoints versionados (/api/v1)
+- Schemas de request/response
+- Paginação, filtros e ordenação
+
+## 🔔 WebSocket
+### Notificação em tempo real para eventos de criação de álbum.
+
+Evento: ```album-criado ```
+
+Endpoints:
+```
+Handshake: ws://localhost:8080/ws/albums
+Tópico: /topic/albuns
+```
+
+## 📊 Observabilidade
+Health Check: ``` GET /actuator/health ```
+
+Métricas: ``` GET /actuator/metrics ```
+
+## 🚦 Rate Limiting
+
+### Proteção contra abuso de requisições
+
+Retorno padrão:
+
+```
+{"error":"Too Many Requests",
+  "message":"Você atingiu o limite de 10 requisições por minuto.
+ O limite será reiniciado em 41 segundos.": 41
+ } 
+```
+
+## 📚 Versionamento da API
+Todos os endpoints seguem o padrão:
+```
+/api/v1/**
+```
+
 ## ✅ Requisitos Implementados
 
-### Requisitos Gerais ✓
-
-- [x] **Segurança (CORS)**: Bloqueio de acesso por domínio (configurável)
-- [x] **JWT**: Autenticação com expiração de 5 minutos e refresh token com validade de 7 dias
-- [x] **Operações CRUD**: POST, PUT, GET (DELETE também implementado)
-- [x] **Paginação**: Listagem de álbuns com Page e Sort
-- [x] **Consultas Parametrizadas**: Filtros por tipo de artista (SOLO/BANDA)
-- [x] **Busca por Artista**: Filtro por nome com ordenação (ASC/DESC)
-- [x] **Upload de Imagens**: Múltiplas capas por álbum
-- [x] **MinIO S3**: Armazenamento seguro de imagens
-- [x] **Links Pré-assinados**: Expiração de 30 minutos (configurável)
-- [x] **Versionamento**: API em `/api/v1/`
-- [x] **Flyway Migrations**: Schema e dados iniciais
+- Segurança (JWT + CORS configurável)
+- CRUD completo de Artistas e Álbuns
+- Relacionamento N:N Artista ↔ Álbum
+- Upload e exclusão de capas
+- Paginação e ordenação
+- Filtros por nome e tipo de artista (SOLO/BANDA)
+- Links pré-assinados para download de imagens
+- MinIO (S3-compatible)
+- Flyway (schema e dados iniciais)
+- Versionamento de API
+- Rate limit
+- Health check
+- WebSocket
 
 
