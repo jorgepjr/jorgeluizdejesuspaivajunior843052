@@ -3,19 +3,24 @@
 
 API REST para gerenciamento de Artistas, Álbuns e Capas, com autenticação JWT,
 armazenamento seguro de imagens no MinIO, filtros avançados, health checks, 
-WebSocket, rate limiting e sincronização de dados regionais.
+WebSocket, rate limiting.
 
 ---
 
 ## 📦 Tecnologias Utilizadas
 
 - Java 21
-- Spring Boot
-- Spring Data JPA
+- Spring Boot 3.5.9
+- Spring Web, Spring Data JPA
+- Spring Security (JWT)
 - PostgreSQL
-- MinIO
+- Flyway (migrações)
+- MinIO (compatível com S3)
+- Springdoc OpenAPI (Swagger)
+- WebSocket (STOMP)
 - Docker & Docker Compose
 - Maven
+- H2 (testes)
 
 ---
 
