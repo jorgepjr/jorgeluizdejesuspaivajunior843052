@@ -38,32 +38,30 @@ public class AlbumController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-
         Page<AlbumResponse> result = albumService.filtrar(nome, tipoArtista, toPageable(page, size, sort));
         return ResponseEntity.ok(result);
     }
 
-
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Album criar(@RequestBody Album album) {
-        return albumService.criar(new Album(album.getNome()));
+    public ResponseEntity<AlbumResponse> criar(@RequestBody Album album) {
+        var response = albumService.criar(new Album(album.getNome()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Album editar(@PathVariable Long id, @RequestBody Album album) {
-        return albumService.editar(id, album);
+    public ResponseEntity<AlbumResponse> editar(@PathVariable Long id, @RequestBody Album album) {
+        var response = albumService.editar(id, album);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Album obter(@NotNull @Positive @PathVariable Long id) {
-        return albumService.obterPorId(id);
+    public ResponseEntity<AlbumResponse> obter(@NotNull @Positive @PathVariable Long id) {
+        var response = albumService.obterPorId(id);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable @NotNull @Positive Long id) {
         albumService.excluir(id);
     }

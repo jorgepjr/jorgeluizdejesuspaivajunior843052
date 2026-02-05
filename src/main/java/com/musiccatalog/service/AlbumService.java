@@ -33,16 +33,24 @@ public class AlbumService {
         this.minioService = minioService;
     }
 
-    public Album criar(Album album) {
-        return albumRepository.save(album);
+    public AlbumResponse criar(Album album) {
+        var newAlbum = albumRepository.save(album);
+        return new AlbumResponse(newAlbum.getId(),
+                newAlbum.getNome(),
+                null,
+                null);
+
+
     }
 
-    public Album editar(Long id, Album album) {
+    public AlbumResponse editar(Long id, Album album) {
         return albumRepository.findById(id)
                 .map(albumEncontrado -> {
                     albumEncontrado.setNome(album.getNome());
 
-                    return albumRepository.save(albumEncontrado);
+                    var albumEdit = albumRepository.save(albumEncontrado);
+                    return new AlbumResponse(albumEdit.getId(), albumEdit.getNome(), null, null);
+
                 }).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
@@ -79,9 +87,11 @@ public class AlbumService {
         artistaAlbumRepository.deleteById(id);
     }
 
-    public Album obterPorId(Long id) {
-        return albumRepository.findById(id)
+    public AlbumResponse obterPorId(Long id) {
+        var album = albumRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException(id));
+
+        return new AlbumResponse(album.getId(), album.getNome(), null, null);
     }
 
     @Transactional
