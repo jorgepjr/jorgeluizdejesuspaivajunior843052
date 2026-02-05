@@ -8,9 +8,18 @@ public class SecurityRoutes {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
+
             "/api/v1/auth/login",
             "/api/v1/auth/register",
             "/api/v1/auth/refresh",
+
+            "/actuator",
+            "/actuator/health",
+            "/actuator/health/liveness",
+            "/actuator/health/readiness",
+            "/actuator/info",
+            "/actuator/metrics",
+            "/actuator/metrics/**"
     };
 
     public static final String[] USER = {
