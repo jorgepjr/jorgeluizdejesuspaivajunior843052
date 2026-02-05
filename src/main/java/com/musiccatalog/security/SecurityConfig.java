@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(SecurityRoutes.PUBLICO).permitAll()
                         .requestMatchers(SecurityRoutes.ADMIN).hasRole(SecurityProfile.ADMIN)
                         .requestMatchers(HttpMethod.GET, SecurityRoutes.USER).hasRole(SecurityProfile.USER)
+//                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(this.securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
