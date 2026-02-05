@@ -13,6 +13,8 @@ import com.musiccatalog.repository.AlbumRepository;
 import com.musiccatalog.repository.ArtistaAlbumRepository;
 import com.musiccatalog.repository.ArtistaRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,21 +26,31 @@ public class AlbumService {
     private final ArtistaRepository artistaRepository;
     private final ArtistaAlbumRepository artistaAlbumRepository;
     private final MinioService minioService;
+    private final NotificacaoService notificacaoService;
+
+    private final Logger log = LoggerFactory.getLogger(AlbumService.class);
 
 
-    public AlbumService(AlbumRepository albumRepository, ArtistaRepository artistaRepository, ArtistaAlbumRepository artistaAlbumRepository, MinioService minioService) {
+    public AlbumService(AlbumRepository albumRepository, ArtistaRepository artistaRepository, ArtistaAlbumRepository artistaAlbumRepository, MinioService minioService, NotificacaoService notificacaoService) {
         this.albumRepository = albumRepository;
         this.artistaRepository = artistaRepository;
         this.artistaAlbumRepository = artistaAlbumRepository;
         this.minioService = minioService;
+        this.notificacaoService = notificacaoService;
     }
 
     public AlbumResponse criar(Album album) {
         var newAlbum = albumRepository.save(album);
-        return new AlbumResponse(newAlbum.getId(),
-                newAlbum.getNome(),
-                null,
-                null);
+        var albumResponse = new AlbumResponse(newAlbum.getId(), newAlbum.getNome(), null, null);
+
+        try {
+            notificacaoService.notificarAlbumCriado(albumResponse);
+            log.info("Notificacao da criacao do album enviada com sucesso.");
+
+        }catch (Exception ex){
+            log.warn("Falha ao enviar notificação do álbum {}.", albumResponse.id(), ex);
+        }
+        return albumResponse;
 
 
     }
