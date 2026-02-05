@@ -70,6 +70,36 @@ password: user
 role: USER
 ```
 
+## 🔑 Como Gerar e Usar o Token JWT
+Para acessar os endpoints protegidos, 
+é necessário gerar um Access Token via login e utilizá-lo nos requests (Swagger ou Postman).
+
+### 1. Login para gerar token
+- Endpoint: POST  ``` /api/v1/auth/login ```
+
+Exemplo de request:
+
+```
+{
+"username": "admin",
+"password": "admin"
+}'
+```
+Response: 
+```
+{
+"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+"refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+### 2. Usar token nos endpoints protegidos
+
+No Swagger ou Postman, adicione o Access Token no header:
+
+``` Authorization: Bearer {accessToken} ```
+
+
+
 ## 🚀 Como rodar o projeto
 
 ### Pré-requisitos
@@ -182,5 +212,6 @@ Todos os endpoints seguem o padrão:
 - Rate limit
 - Health check
 - WebSocket
+- Swagger (Documentacao Basica)
 
 
