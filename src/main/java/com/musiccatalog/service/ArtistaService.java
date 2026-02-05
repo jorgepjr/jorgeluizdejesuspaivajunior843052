@@ -1,11 +1,12 @@
 package com.musiccatalog.service;
 
-import com.musiccatalog.dto.PagedResponse;
+import com.musiccatalog.dto.ArtistaResponse;
+import com.musiccatalog.enums.TipoArtista;
 import com.musiccatalog.exception.RecordNotFoundException;
 import com.musiccatalog.model.Artista;
 import com.musiccatalog.repository.ArtistaRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,18 +18,18 @@ public class ArtistaService {
 
     public ArtistaService(ArtistaRepository repository) {this.repository = repository;}
 
-    public Artista criar(Artista artista){
+    public Artista criar(Artista artista) {
         return repository.save(artista);
     }
 
-    public Artista editar(Long id, Artista artista){
-       return repository.findById(id)
-               .map(artistaEncontrado -> {
-                   artistaEncontrado.setTipo(artista.getTipo());
-                   artistaEncontrado.setNome(artista.getNome());
+    public Artista editar(Long id, Artista artista) {
+        return repository.findById(id)
+                .map(artistaEncontrado -> {
+                    artistaEncontrado.setTipo(artista.getTipo());
+                    artistaEncontrado.setNome(artista.getNome());
 
-                   return repository.save(artistaEncontrado);
-               }).orElseThrow(() -> new RecordNotFoundException(id));
+                    return repository.save(artistaEncontrado);
+                }).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
     public void excluir(Long id) {
@@ -41,9 +42,16 @@ public class ArtistaService {
                 .orElseThrow(() -> new RecordNotFoundException(id));
     }
 
-    public PagedResponse<Artista> obterPaginado(int pageNumber, int pageSize) {
-        Page<Artista> pageArtistas = repository.findAll(PageRequest.of(pageNumber, pageSize));
-        List<Artista> artistas = pageArtistas.getContent();
-        return new PagedResponse<>(artistas, pageArtistas.getTotalElements(), pageArtistas.getTotalPages());
+    public Page<ArtistaResponse> filtrar(String nome, TipoArtista tipo, Pageable pageable) {
+        Page<Artista> page;
+
+        if (nome == null && tipo == null) {
+            page = repository.findAll(pageable);
+        } else {
+            page = repository.filtrar(nome, tipo, pageable);
+        }
+
+        return page.map(a -> new ArtistaResponse(a.getId(), a.getNome(), a.getTipo()));
+
     }
 }

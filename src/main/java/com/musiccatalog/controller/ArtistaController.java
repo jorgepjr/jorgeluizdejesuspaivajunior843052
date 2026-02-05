@@ -1,15 +1,17 @@
 package com.musiccatalog.controller;
 
-import com.musiccatalog.dto.PagedResponse;
+import com.musiccatalog.dto.ArtistaResponse;
+import com.musiccatalog.enums.TipoArtista;
 import com.musiccatalog.model.Artista;
 import com.musiccatalog.service.ArtistaService;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import static com.musiccatalog.utils.PageableUtils.toPageable;
 
 @Validated
 @RestController
@@ -20,10 +22,13 @@ public class ArtistaController {
     public ArtistaController(ArtistaService service) {this.service = service;}
 
     @GetMapping
-    public PagedResponse<Artista> obterPaginado(
-            @RequestParam(defaultValue = "0") @PositiveOrZero int pageNumber,
-            @RequestParam(defaultValue = "10") @Positive @Max(100) int pageSize) {
-        return service.obterPaginado(pageNumber, pageSize);
+    public Page<ArtistaResponse> filtrar(@RequestParam(required = false) String nome,
+                                         @RequestParam(required = false) TipoArtista tipo,
+                                         @RequestParam(defaultValue = "nome,asc") String sort,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size) {
+
+        return service.filtrar(nome, tipo, toPageable(page, size, sort));
     }
 
     @PostMapping
