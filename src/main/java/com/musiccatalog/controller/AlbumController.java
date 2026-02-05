@@ -9,6 +9,8 @@ import com.musiccatalog.service.CapaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,8 @@ import static com.musiccatalog.utils.PageableUtils.toPageable;
 public class AlbumController {
     private final AlbumService albumService;
     private final CapaService capaService;
+
+    Logger log = LoggerFactory.getLogger(AlbumController.class);
 
     public AlbumController(AlbumService albumService, CapaService capaService) {
         this.albumService = albumService;
