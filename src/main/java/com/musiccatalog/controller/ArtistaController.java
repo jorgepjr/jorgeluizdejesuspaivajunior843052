@@ -4,6 +4,7 @@ import com.musiccatalog.dto.ArtistaResponse;
 import com.musiccatalog.enums.TipoArtista;
 import com.musiccatalog.model.Artista;
 import com.musiccatalog.service.ArtistaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import static com.musiccatalog.utils.PageableUtils.toPageable;
 @Validated
 @RestController
 @RequestMapping("/api/v1/artistas")
+@Tag(name = "2 - Artistas", description = "Endpoints para gerenciar artistas")
 public class ArtistaController {
     private final ArtistaService service;
 
