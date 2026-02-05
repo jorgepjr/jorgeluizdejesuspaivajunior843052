@@ -6,10 +6,10 @@ spring:
     name: musiccatalog-api
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/musiccatalogdb
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/musiccatalogdb}
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 
   jpa:
     open-in-view: false
@@ -26,12 +26,12 @@ spring:
     baseline-on-migrate: true
 
 jwt:
-  secret: ${SECRET_KEY:my-secret-key}
+  secret: ${JWT_SECRET:my-secret-key}
   expiration: 300000
   refresh-expiration: 604800000
 
 minio:
-  url: ${MINIO_ENDPOINT:http://localhost:9000}
+  url: ${MINIO_URL:http://minio:9000}
   access-key: ${MINIO_ACCESS_KEY:minioadmin}
   secret-key: ${MINIO_SECRET_KEY:minioadmin123}
   bucket: ${MINIO_BUCKET:music-catalog}
