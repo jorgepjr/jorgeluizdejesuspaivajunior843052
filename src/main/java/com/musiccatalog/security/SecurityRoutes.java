@@ -15,8 +15,7 @@ public class SecurityRoutes {
 
     public static final String[] USER = {
             "/api/v1/artistas/**",
-            "/api/v1/albuns/**",
-            "/api/v1/capas/**"
+            "/api/v1/albuns/**"
     };
 
     public static final String[] ADMIN = {

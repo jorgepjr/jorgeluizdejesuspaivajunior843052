@@ -2,6 +2,7 @@ package com.musiccatalog.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,7 +32,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(SecurityRoutes.PUBLICO).permitAll()
                         .requestMatchers(SecurityRoutes.ADMIN).hasRole(SecurityProfile.ADMIN)
-                        .requestMatchers(SecurityRoutes.USER).hasRole(SecurityProfile.USER)
+                        .requestMatchers(HttpMethod.GET, SecurityRoutes.USER).hasRole(SecurityProfile.USER)
                         .anyRequest().authenticated())
                 .addFilterBefore(this.securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
