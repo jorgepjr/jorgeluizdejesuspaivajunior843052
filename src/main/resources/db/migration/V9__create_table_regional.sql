@@ -1,0 +1,9 @@
+CREATE TABLE regional (
+    id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(200) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    sinc_id VARCHAR(100),  -- opcional, id da API externa
+    ultima_sinc TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
