@@ -19,7 +19,9 @@ public class SecurityRoutes {
             "/actuator/health/readiness",
             "/actuator/info",
             "/actuator/metrics",
-            "/actuator/metrics/**"
+            "/actuator/metrics/**",
+
+            "/api/v1/regionais/**"
     };
 
     public static final String[] USER = {
