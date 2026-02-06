@@ -225,6 +225,11 @@ Todos os endpoints seguem o padrão:
 ```
 /api/v1/**
 ```
+## 🧪 Testes Implementados
+
+Atualmente, apenas o  ```ArtistaService``` possui testes de unidade implementados.
+
+Os demais services não possuem testes, mas todos os endpoints obrigatórios estão funcionando.
 
 ## ✅ Requisitos Implementados
 
