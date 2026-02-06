@@ -173,6 +173,35 @@ Handshake: ws://localhost:8080/ws/albums
 Tópico: /topic/albuns
 ```
 
+## 🌐 Regionais (Sync)
+### Sincronização automática com API externa
+
+- Endpoint: ```POST /api/v1/regionais/sync```
+- Faz download da lista de regionais da API externa e atualiza o banco local.
+- Cria novos registros se não existirem, atualiza os existentes e mantém ativo/sincId corretamente.
+
+Resposta da requisicao: 
+```
+[
+  {
+    "id": 9,
+    "nome": "REGIONAL DE CUIABÁ",
+    "ativo": true,
+    "sincId": "9",
+    "createdAt": "2026-02-04T18:00:00",
+    "updatedAt": "2026-02-04T18:05:00"
+  },
+  {
+    "id": 31,
+    "nome": "REGIONAL DE GUARANTÃ DO NORTE",
+    "ativo": true,
+    "sincId": "31",
+    "createdAt": "2026-02-04T18:00:00",
+    "updatedAt": "2026-02-04T18:05:00"
+  }
+]
+```
+
 ## 📊 Observabilidade
 Health Check: ``` GET /actuator/health ```
 
@@ -213,5 +242,6 @@ Todos os endpoints seguem o padrão:
 - Health check
 - WebSocket
 - Swagger (Documentacao Basica)
+- Sincronizacao de Regionais
 
 
